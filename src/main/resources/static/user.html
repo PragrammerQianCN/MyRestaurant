@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>管理员管理列表</title>
+    <script type="text/javascript">
+        var themetype = localStorage['easyuitheme']||"default";
+        document.write('<link rel="stylesheet" type="text/css" href="__PUBLIC__/easyui/themes/'+themetype+'/easyui.css"/>')
+    </script>
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/easyui/themes/icon.css"/>
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/easyui/themes/all.css"/>
+    <script type="text/javascript" src="__PUBLIC__/easyui/jquery.min.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/easyui/locale/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/json2.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/common.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('#grid1').datagrid({
+                title: '管理员列表',
+                nowrap: false,
+                striped: true,
+                fit: true,
+                url: __APP__+"database/listPage?table=user",
+                idField: 'uuid',
+                pagination: true,
+                rownumbers: true,
+                pageSize: 10,
+                pageNumber: 1,
+                singleSelect: true,
+                fitColumns: true,
+                sortName: 'id',
+                sortOrder: 'desc',
+                columns: [
+                    [
+                        {title: 'id', field: 'id', width: 100, hidden: false},
+                        {title: '用户名', field: 'username', width: 100, sortable: true},
+                        //{title: '状态', field: 'statecn', width: 100, sortable: true},
+                        {title: '电话', field: 'tel', width: 100, sortable: true},
+                        {title: '密码', width: 100, field: 'passwd'},
+                        {title:'用户权限',width:100,field:'roletype',formatter:function(v){
+                        	if(v=="1"){
+                        		return "管理员";
+                        	}if(v=="4"){
+                                return "骑手";
+                            }if(v=="3"){
+                                return "餐厅管理员";
+                            }else{
+                                return "用户";
+                            }
+                        }}
+
+                    ]
+                ],
+                toolbar: [
+                    {
+                        text: '新增',
+                        iconCls: 'icon-add',
+                        handler: function () {
+                            $("#action").val("add");
+                            $("#managerDialog").dialog('open');
+                            $('.validatebox-tip').hide();
+                        }
+                    },
+                    '-',
+                    {
+                        text: '修改',
+                        id: 'commit',
+                        iconCls: 'icon-edit',
+                        handler: function () {
+                            $("#action").val("edit");
+                            var selected = $('#grid1').datagrid('getSelected');
+                            if (selected) {
+                                edit(selected);
+                                var index = $('#grid1').datagrid('getRowIndex', selected);
+
+                            } else {
+                                $.messager.alert("提示", "请选择一条记录进行操作");
+                            }
+                        }
+                    },
+                    '-',
+                    {
+                        text: '删除',
+                        id: 'commit',
+                        iconCls: 'icon-remove',
+                        handler: function () {
+                            var rows = $('#grid1').datagrid('getSelected');
+                            if (rows) {
+                                var rowId = rows.id;
+                                $.messager.confirm('提示', '确定要删除吗？', function (r) {
+                                    if (r) {
+                                        deleteItem(rowId);
+                                    }
+                                });
+                            } else {
+                                $.messager.alert("提示", "请选择一条记录进行操作");
+                            }
+                        }
+                    }
+                ]
+
+            });
+
+
+
+            $("#sid").combobox({
+                method:"get",
+                url:__APP__+"database/list?table=shop",
+                valueField: 'id',
+                textField: 'sname'
+            });
+
+
+        });
+
+        function save() {
+            var shop = $("#sid").combobox("getText");
+            $("#shop").val(shop);
+            $('#managForm').form('submit', {
+                url: __APP__+"database/saveWithFile",
+                onSubmit: function () {
+                    return inputCheck();
+                },
+                success: function (data) {
+                    closeBackGround();
+                    $.messager.alert("提示", "操作成功!", "info", function () {
+                        closeFlush();
+                    });
+                }
+            });
+        }
+
+        function edit(obj) {
+            //$.post("controller/userController.php?action=getOne",{id:uuid},function(data){
+            var username = obj.username;
+            var password = obj.passwd;
+            var roletype = obj.roletype;
+            $("#username").val(username);
+            $("#passwd").val(password);
+            $("#roletype").combobox('setValue', roletype);
+            $("#id").val(obj.id);
+            $("#managerDialog").dialog('open');
+            //});
+        }
+
+        function deleteItem(uuid) {
+            $.post(__APP__+"database/delete", {table:"user",id: uuid}, function (data) {
+            	alert(data);
+                closeFlush();
+            });
+        }
+
+        function cancel() {
+            $.messager.confirm('提示', '是否要关闭？', function (r) {
+                if (r) {
+                    $("#managerDialog").dialog('close');
+                }
+            });
+        }
+
+        function query() {
+            /*
+             var username = $("#username").val();
+             var creatTime = $("#creatTm").datebox("getValue");
+             var obj = new Object();
+             obj.username = username;
+             obj.createTime = creatTime
+             $('#grid1').datagrid('options').queryParams = obj;
+             $('#grid1').datagrid("reload");*/
+            //$('#grid1').datagrid('loadData',{total:0,rows:[]});
+            $('#grid1').datagrid('options').queryParams = serializeObject($('#searchForm'));
+            $('#grid1').datagrid("reload");
+            //$('#grid1').datagrid('loadData',{total:0,rows:[]});
+            //$('#grid1').datagrid('load', serializeObject($('#searchForm')));
+        }
+
+        function reset() {
+            searchForm.reset();
+        }
+
+        function closeFlush() {
+            managForm.reset();
+            $("#managerDialog").dialog('close');
+            $("#grid1").datagrid("reload");
+        }
+
+        function inputCheck() {
+            if ($("#passwd").val() != $("#password2").val()) {
+                $.messager.alert("提示", "两次输入密码不一致!");
+                return false;
+            } else if (!($("#managForm").form("validate"))) {
+                return false;
+            }
+            openBackGround();
+            return true;
+        }
+    </script>
+</head>
+<body class="easyui-layout">
+<div id="main" class="easyui-layout" fit="true" style="width:100%;height:100%;">
+    <div region="north" id="" style="height:70px;" border="false" title="查询条件">
+            <form action="" id="searchForm" name="searchForm" method="post">
+            	<input type="hidden" name="table" value="user"/>
+                <table cellpadding="1" cellspacing="0" class="tb_search">
+                    <tr>
+                        <td width="10%">
+                            <label for="susername">姓名：</label>
+                            <input type="text" name="username" width="100%" maxlength="32"/>
+                        </td>
+                        <td width="10%">
+                            <label for="sroletype">用类型：</label>
+                            <select type="text"  width="100%" name="roletype">
+                                <option  value="">全部</option>
+                                <option  value="1">管理员</option>
+                                <option  value="2">普通用户</option>
+                            </select>
+                        </td>
+
+                        <td width="10%">
+                            <a href="#" onclick="query();" class="easyui-linkbutton" iconCls="icon-search">查询</a>
+                            <a href="#" onclick="reset();" class="easyui-linkbutton" iconCls="icon-redo">重置</a>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+    </div>
+    <div region="center" border="false" style="overflow:hidden;">
+
+        <table id="grid1"></table>
+
+    </div>
+</div>
+
+
+<div id="managerDialog" class="easyui-dialog" title="用户管理" style="width:500px;height:290px;" toolbar="#dlg-toolbar"
+     buttons="#dlg-buttons2" resizable="true" modal="true" closed='true'>
+    <form id="managForm" name="managForm" method="post" enctype="multipart/form-data">
+        <input type="hidden" id="action" name="action"/>
+        <input type="hidden" id="id" name="id"/>
+        <input type="hidden" id="table" name="table" value="user"/>
+        <input type="hidden" id="fileName" name="fileName" value="img"/>
+        
+        <table cellpadding="1" cellspacing="1" class="tb_custom1">
+            <tr>
+                <th width="10%" align="right"><label>用户名：</label></th>
+                <td width="30%">
+                    <input id="username" name="username" class="easyui-validatebox"
+                           style="width:300px;word-wrap: break-word;word-break:break-all;" type="text" required="true"
+                           validType="length[0,32]"/><font color='red'>*</font></td>
+            </tr>
+            <tr>
+                <th width="30%" align="right"><label>所属餐厅：</label></th>
+                <td width="30%" colspan="3">
+                    <input id="sid" name="sid" style="width:200px;word-wrap: break-word;word-break:break-all;" />
+                    <input id="shop" name="shop" type="hidden"/>
+                </td>
+            </tr>
+            <tr>
+                <th width="10%" align="right"><label>电话：</label></th>
+                <td width="30%">
+                    <input id="tel" name="tel" class="easyui-validatebox"
+                           style="width:300px;word-wrap: break-word;word-break:break-all;" type="text" required="true"
+                           validType="length[0,32]"/><font color='red'>*</font>
+                </td>
+            </tr>
+            <tr>
+                <th width="10%" align="right"><label>头像：</label></th>
+                <td width="30%">
+                    <input id="file" name="file" type="file"/>
+                 </td>
+            </tr>
+            <tr>
+                <th width="10%" align="right"><label>权限：</label></th>
+                <td width="30%">
+                    <select id="roletype" name="roletype" class="easyui-combobox" panelHeight="auto"
+                            style="width:300px;word-wrap: break-word;word-break:break-all;" type="text" required="true"
+                            validType="length[0,32]">
+                        <option value="1" selected="selected">管理员</option>
+                        <option value="3">餐厅管理员</option>
+                        <option value="2">客户</option>
+                        <option value="4">骑手</option>
+                    </select></td>
+            </tr>
+            <tr>
+                <th width="10%" align="right"><label>状态：</label></th>
+                <td width="30%">
+                    <select id="statecn" name="statecn" 
+                            style="width:300px;word-wrap: break-word;word-break:break-all;" type="text" required="true"
+                            validType="length[0,32]">
+                           
+                        <option value="正常" selected="selected">正常</option>
+                        <option value="禁用">禁用</option>
+                    </select></td>
+            </tr>
+            <tr>
+                <th width="10%" align="right"><label>密码：</label></th>
+                <td width="10%">
+                    <input id="passwd" type="passwd" name="passwd" class="easyui-validatebox" required="true" validType="length[0,32]"
+                           style="width:300px"/>
+                </td>
+            </tr>
+            <tr>
+                <th width="10%" align="right"><label>密码确认：</label></th>
+                <td width="10%">
+                    <input id="password2" type="passwd" name="" class="easyui-validatebox" style="width:300px" required="true"
+                           validType="length[0,32]"/>
+                </td>
+            </tr>
+
+        </table>
+    </form>
+    <div id="dlg-buttons2">
+        <a href="#" class="easyui-linkbutton" onclick="save();">保存</a>
+        <a href="#" class="easyui-linkbutton" onclick="cancel();">取消</a>
+    </div>
+</div>
+
+</body>
+</html>

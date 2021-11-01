@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ideabobo.service.YouhuijuanMapper">
+  <resultMap id="BaseResultMap" type="com.ideabobo.model.Youhuijuan">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="total" jdbcType="INTEGER" property="total" />
+    <result column="extime" jdbcType="INTEGER" property="extime" />
+    <result column="sid" jdbcType="INTEGER" property="sid" />
+    <result column="uid" jdbcType="INTEGER" property="uid" />
+    <result column="typeid" jdbcType="INTEGER" property="typeid" />
+    <result column="fulluse" jdbcType="INTEGER" property="fulluse" />
+    <result column="ndate" jdbcType="VARCHAR" property="ndate" />
+    <result column="extimestr" jdbcType="VARCHAR" property="extimestr" />
+    <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="statecn" jdbcType="VARCHAR" property="statecn" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, total, extime, sid, uid, typeid, fulluse, ndate, extimestr, username, statecn
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from wct_youhuijuan
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from wct_youhuijuan
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.ideabobo.model.Youhuijuan">
+    insert into wct_youhuijuan (id, total, extime, 
+      sid, uid, typeid, fulluse, 
+      ndate, extimestr, username, 
+      statecn)
+    values (#{id,jdbcType=INTEGER}, #{total,jdbcType=INTEGER}, #{extime,jdbcType=INTEGER}, 
+      #{sid,jdbcType=INTEGER}, #{uid,jdbcType=INTEGER}, #{typeid,jdbcType=INTEGER}, #{fulluse,jdbcType=INTEGER}, 
+      #{ndate,jdbcType=VARCHAR}, #{extimestr,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, 
+      #{statecn,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.ideabobo.model.Youhuijuan">
+    insert into wct_youhuijuan
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="total != null">
+        total,
+      </if>
+      <if test="extime != null">
+        extime,
+      </if>
+      <if test="sid != null">
+        sid,
+      </if>
+      <if test="uid != null">
+        uid,
+      </if>
+      <if test="typeid != null">
+        typeid,
+      </if>
+      <if test="fulluse != null">
+        fulluse,
+      </if>
+      <if test="ndate != null">
+        ndate,
+      </if>
+      <if test="extimestr != null">
+        extimestr,
+      </if>
+      <if test="username != null">
+        username,
+      </if>
+      <if test="statecn != null">
+        statecn,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="total != null">
+        #{total,jdbcType=INTEGER},
+      </if>
+      <if test="extime != null">
+        #{extime,jdbcType=INTEGER},
+      </if>
+      <if test="sid != null">
+        #{sid,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null">
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="typeid != null">
+        #{typeid,jdbcType=INTEGER},
+      </if>
+      <if test="fulluse != null">
+        #{fulluse,jdbcType=INTEGER},
+      </if>
+      <if test="ndate != null">
+        #{ndate,jdbcType=VARCHAR},
+      </if>
+      <if test="extimestr != null">
+        #{extimestr,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null">
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="statecn != null">
+        #{statecn,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.ideabobo.model.Youhuijuan">
+    update wct_youhuijuan
+    <set>
+      <if test="total != null">
+        total = #{total,jdbcType=INTEGER},
+      </if>
+      <if test="extime != null">
+        extime = #{extime,jdbcType=INTEGER},
+      </if>
+      <if test="sid != null">
+        sid = #{sid,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null">
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="typeid != null">
+        typeid = #{typeid,jdbcType=INTEGER},
+      </if>
+      <if test="fulluse != null">
+        fulluse = #{fulluse,jdbcType=INTEGER},
+      </if>
+      <if test="ndate != null">
+        ndate = #{ndate,jdbcType=VARCHAR},
+      </if>
+      <if test="extimestr != null">
+        extimestr = #{extimestr,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null">
+        username = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="statecn != null">
+        statecn = #{statecn,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.ideabobo.model.Youhuijuan">
+    update wct_youhuijuan
+    set total = #{total,jdbcType=INTEGER},
+      extime = #{extime,jdbcType=INTEGER},
+      sid = #{sid,jdbcType=INTEGER},
+      uid = #{uid,jdbcType=INTEGER},
+      typeid = #{typeid,jdbcType=INTEGER},
+      fulluse = #{fulluse,jdbcType=INTEGER},
+      ndate = #{ndate,jdbcType=VARCHAR},
+      extimestr = #{extimestr,jdbcType=VARCHAR},
+      username = #{username,jdbcType=VARCHAR},
+      statecn = #{statecn,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>管理员管理列表</title>
+    <script type="text/javascript">
+        var themetype = localStorage['easyuitheme']||"metrogray";
+        document.write('<link rel="stylesheet" type="text/css" href="__PUBLIC__/easyui/themes/'+themetype+'/easyui.css"/>')
+    </script>
+    <script src="__PUBLIC__/easyuitheme/easyui/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="__PUBLIC__/easyuitheme/easyui/jquery.easyui.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="__PUBLIC__/easyuitheme/easyui/locale/easyui-lang-zh_CN.js" type="text/javascript" charset="utf-8"></script>
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/easyuitheme/easyui/themes/icon.css"/>
+    <script type="text/javascript" src="__PUBLIC__/js/json2.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/common.js"></script>
+    <!--字体图标-->
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/easyuitheme/easyui/themes/icons/css/font-awesome.min.css" />
+    <!--皮肤-->
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/easyuitheme/easyui/themes/gray/easyui.css" />
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/easyuitheme/css/superBlue.css" />
+    <script type="text/javascript" src="__PUBLIC__/js/echarts.js"></script>
+    <script type="text/javascript">
+        $(function () {
+
+
+            document.onkeydown=function (e){
+                e = e ? e : event;
+                if(e.keyCode == 13){
+                    query();
+                }
+            }
+
+            showChart();
+        });
+
+        function save() {
+
+            var username = $("#uid").combobox("getText");
+            $("#username").val(username);
+            var gnames = $("#gids").combobox("getText");
+            $("#gnames").val(gnames);
+            var price = $("#price").numberbox("getValue");
+            var totalcount = $("#totalcount").numberbox("getValue");
+            var total = price*totalcount;
+            $("#total").val(total);
+            var gid = $("#gids").combobox("getValue");
+            ajaxCallback("find",{table:"good",id:gid},function (good) {
+                if(good && good.count){
+                    good.count-=totalcount;
+                }
+                if(!good.count || good.count<=0){
+                    $.messager.alert("提示", "所选药品数量不足!", function () {
+
+                    });
+                    return;
+                }
+
+
+
+                ajaxCallback("save",{table:"good",count:good.count,id:good.id},function (data) {
+                    $('#managForm').form('submit', {
+                        url: __APP__+"database/saveWithFile?table=bill",
+                        onSubmit: function () {
+                            return inputCheck();
+                        },
+                        success: function (data) {
+                            closeBackGround();
+                            $.messager.alert("提示", data, "info", function () {
+                                closeFlush();
+                            });
+                        }
+                    });
+                })
+            });
+
+        }
+
+        function edit(obj) {
+            var id = obj.id;
+            $("#id").val(id);
+            $("#ndate").datebox("setValue",obj.ndate);
+            $("#uid").combobox("setValue", obj.uid);
+            $("#gids").combobox("setValue", obj.gids);
+            $("#sid").combobox("setValue", obj.sid);
+            $("#price").numberbox('setValue', obj.price);
+            $("#totalcount").numberbox('setValue', obj.totalcount);
+            $("#pici").val(obj.pici);
+            $("#note").val(obj.note);
+            $("#managerDialog").dialog('open');
+        }
+
+        function deleteItem(uuid) {
+            openBackGround();
+            $.post(__APP__+"database/delete?table=bill", {id: uuid}, function (data) {
+                closeBackGround();
+                closeFlush();
+            });
+        }
+
+        function cancel() {
+            $.messager.confirm('提示', '是否要关闭？', function (r) {
+                if (r) {
+                    closeFlush();
+                }
+            });
+        }
+
+        function query() {
+            $('#grid1').datagrid('load', serializeObject($('#searchForm')));
+            refreshChart();
+        }
+
+
+        function closeFlush() {
+            managForm.reset();
+            $("#managerDialog").dialog('close');
+            $("#grid1").datagrid("reload");
+        }
+
+        function inputCheck() {
+            if (!($("#managForm").form("validate"))) {
+                return false;
+            }
+            openBackGround();
+            return true;
+        }
+
+        function show(index) {
+
+            var rows = $("#grid1").datagrid('getRows');
+            var obj = rows[index];
+            var id = obj.id;
+            $("#id2").text(obj.id);
+            $("#gname2").text(obj.gname);
+            $("#gbrand2").text(obj.gbrand);
+            $("#intime2").text(obj.intime);
+            $("#gmodel2").text(obj.gmodel);
+            $("#gcolor2").text(obj.gcolor);
+            $("#gprice2").text(obj.gprice);
+            $("#note2").text(obj.note);
+            $("#gnumber2").text(obj.gnumber);
+
+            $("#viewDialog").dialog('open');
+            //});
+        }
+
+
+        function setNull(){
+            searchForm.reset();
+        }
+
+
+        function showChart(obj){
+            //$("#chartdialog").dialog('open');
+            refreshChart(obj);
+
+        }
+
+
+        function refreshChart(obj) {
+            $.post(clientUrl + "/list", {table:"shop"}, function (shopliststr) {
+
+                    var shoplist = shopliststr;
+
+                    var xarray1 = [];
+                    var yarray1 = [];
+
+                    var xarray2 = [];
+                    var yarray2 = [];
+                    for (var i = 0; i < shoplist.length; i++) {
+                        xarray1.push(shoplist[i].sname);
+                        yarray1.push(shoplist[i].danshu);
+                        xarray2.push(shoplist[i].sname);
+                        yarray2.push(shoplist[i].haoping);
+                    }
+
+
+                    var myChart = echarts.init(document.getElementById('mychat'));
+                    var myChart2 = echarts.init(document.getElementById('mychat2'));
+                    var option = {
+                        color: ['#3398DB'],
+                        tooltip: {
+                            trigger: 'axis',
+                            //formatter: "{a} <br/>{b}: {c} ({d}%)",
+                            axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                                type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                            }
+                        },
+                        grid: {
+                            left: '3%',
+                            right: '4%',
+                            bottom: '3%',
+                            containLabel: true
+                        },
+                        xAxis: [
+                            {
+                                type: 'category',
+                                data: xarray1,
+                                axisTick: {
+                                    alignWithLabel: true
+                                }
+                            }
+                        ],
+                        yAxis: [
+                            {
+                                type: 'value'
+                            }
+                        ],
+                        series: [
+                            {
+                                name: '订单量',
+                                type: 'bar',
+                                barWidth: '60%',
+                                data: yarray1
+                            }
+                        ]
+                    };
+
+
+                    var option2 = {
+                        color: ['#3398DB'],
+                        tooltip: {
+                            trigger: 'axis',
+                            //formatter: "{a} <br/>{b}: {c} ({d}%)",
+                            axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                                type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                            }
+                        },
+                        grid: {
+                            left: '3%',
+                            right: '4%',
+                            bottom: '3%',
+                            containLabel: true
+                        },
+                        xAxis: [
+                            {
+                                type: 'category',
+                                data: xarray2,
+                                axisTick: {
+                                    alignWithLabel: true
+                                }
+                            }
+                        ],
+                        yAxis: [
+                            {
+                                type: 'value'
+                            }
+                        ],
+                        series: [
+                            {
+                                name: '订单量',
+                                type: 'bar',
+                                barWidth: '60%',
+                                data: yarray2
+                            }
+                        ]
+                    };
+                    myChart.setOption(option);
+                    myChart2.setOption(option2);
+
+            });
+        }
+
+    </script>
+</head>
+<body class="easyui-layout">
+<div id="main" class="easyui-layout" fit="true" style="width:100%;height:100%;">
+    <div region="north" id="" style="height:70px;" border="false" title="查询条件">
+        <form action="" id="searchForm" name="searchForm" method="post">
+            <table cellpadding="5" cellspacing="0" class="tb_search">
+                <tr>
+                    <td width="10%">
+                        <label for="stitle">日期：</label>
+                        <input type="text" id="sndate" name="ndate" class="easyui-datebox" width="100%" maxlength="32"/>
+                    </td>
+                    <td width="10%">
+                        <a href="#" onclick="query();" id="querylink" class="easyui-linkbutton"
+                           iconCls="icon-search">查询</a>
+                        <a href="#" onclick="setNull();" class="easyui-linkbutton" iconCls="icon-redo">重置</a>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <div region="center" border="false" >
+        <div style="float: left;width: 100%;height: 900px;">
+            <!--<div id="mychat" style="width: 400px;height:400px;float: left;"></div>-->
+            <!--<div style="float: left;">
+                <p style="color: red;font-size: 20px;" id="xiaoshou"></p>
+                <p style="color: green;font-size: 20px;" id="zhichu"></p>
+                <p style="color: blue;font-size: 20px;" id="lirun"></p>
+            </div>-->
+            <div id="mychat" style="width: 800px;height:400px;"></div>
+            <div id="mychat2" style="width: 800px;height:400px;"></div>
+        </div>
+
+
+    </div>
+</div>
+
+
+<div id="managerDialog" class="easyui-dialog" title="销售管理" style="width:650px;height:350px;" toolbar="#dlg-toolbar"
+     buttons="#dlg-buttons2" resizable="true" modal="true" closed='true'>
+    <form id="managForm" name="managForm" method="post" enctype="multipart/form-data">
+        <input type="hidden" id="action" name="action"/>
+        <input type="hidden" id="id" name="id"/>
+        <input type="hidden" id="total" name="total"/>
+        <input type="hidden" id="btype" name="btype" value="2"/>
+        <table cellpadding="1" cellspacing="1" class="tb_custom1">
+            <tr>
+                <th width="30%" align="right"><label>药品：</label></th>
+                <td width="30%" colspan="3">
+                    <input id="gids" name="gids" style="width:200px;word-wrap: break-word;word-break:break-all;" />
+                    <input id="gnames" name="gnames" type="hidden"/>
+                </td>
+            </tr>
+            <tr>
+                <th width="30%" align="right"><label>日期：</label></th>
+                <td width="30%">
+                    <input id="ndate" name="ndate" class="easyui-datebox"
+                           style="width:200px;word-wrap: break-word;word-break:break-all;" type="text" required="true"
+                           validType="length[0,100]"/>
+                </td>
+                <th width="30%" align="right"><label>操作人：</label></th>
+                <td width="30%">
+                    <input id="uid" name="uid" style="width:200px;word-wrap: break-word;word-break:break-all;" />
+                    <input type="hidden" id="username" name="username"/>
+                </td>
+            </tr>
+
+
+            <tr>
+                <th width="30%" align="right"><label>售价：</label></th>
+                <td width="30%">
+                    <input id="price" name="price" class="easyui-numberbox"
+                           style="width:200px;word-wrap: break-word;word-break:break-all;" type="text" required="true"
+                           validType="length[0,9]"/>
+                </td>
+                <th width="30%" align="right"><label>数量：</label></th>
+                <td width="30%" colspan="3">
+                    <input id="totalcount" name="totalcount" class="easyui-numberbox"
+                           style="width:200px;word-wrap: break-word;word-break:break-all;" type="text" required="true"
+                           validType="length[0,9]"/>
+                </td>
+            </tr>
+
+
+            <tr>
+                <th width="30%" align="right"><label>备注：</label></th>
+                <td colspan="3" width="30%">
+                    <textarea rows="" cols="" style="width:100%" id="note" name="note"></textarea>
+                </td>
+
+            </tr>
+        </table>
+
+
+    </form>
+    <div id="dlg-buttons2">
+        <a href="#" class="easyui-linkbutton" onclick="save();">保存</a>
+        <a href="#" class="easyui-linkbutton" onclick="cancel();">取消</a>
+    </div>
+</div>
+
+
+
+
+</body>
+</html>

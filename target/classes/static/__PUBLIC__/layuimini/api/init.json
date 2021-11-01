@@ -1,0 +1,52 @@
+{
+  "homeInfo": {
+    "title": "用户管理",
+    "href": "user.html"
+  },
+  "logoInfo": {
+    "title": "后台管理系统",
+    "image": "./__PUBLIC__/images/login/logo.png",
+    "href": ""
+  },
+  "menuInfo": [
+    {
+      "title": "系统管理",
+      "icon": "fa fa-address-book",
+      "href": "",
+      "target": "_self",
+      "child": [
+
+        {
+          "title": "用户管理",
+          "href": "user.html",
+          "icon": "fa fa-window-maximize",
+          "target": "_self"
+        },
+        {
+          "title": "资讯信息管理",
+          "href": "blog.html",
+          "icon": "fa fa-gears",
+          "target": "_self"
+        },
+        {
+          "title": "信息分类管理",
+          "href": "type.html",
+          "icon": "fa fa-gears",
+          "target": "_self"
+        },
+        {
+          "title": "电影信息管理",
+          "href": "notice.html",
+          "icon": "fa fa-gears",
+          "target": "_self"
+        },
+        {
+          "title": "论坛讨论",
+          "href": "postsreplay.html",
+          "icon": "fa fa-file-text",
+          "target": "_self"
+        }
+      ]
+    }
+  ]
+}

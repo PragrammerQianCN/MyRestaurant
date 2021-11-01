@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ideabobo.service.DingzuoMapper">
+  <resultMap id="BaseResultMap" type="com.ideabobo.model.Dingzuo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="openid" jdbcType="VARCHAR" property="openid" />
+    <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="renshu" jdbcType="VARCHAR" property="renshu" />
+    <result column="xingming" jdbcType="VARCHAR" property="xingming" />
+    <result column="shouji" jdbcType="VARCHAR" property="shouji" />
+    <result column="shijian" jdbcType="VARCHAR" property="shijian" />
+    <result column="todate" jdbcType="VARCHAR" property="todate" />
+    <result column="beizhu" jdbcType="VARCHAR" property="beizhu" />
+    <result column="shopid" jdbcType="VARCHAR" property="shopid" />
+    <result column="shopname" jdbcType="VARCHAR" property="shopname" />
+    <result column="ndate" jdbcType="VARCHAR" property="ndate" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="sid" jdbcType="INTEGER" property="sid" />
+    <result column="shop" jdbcType="VARCHAR" property="shop" />
+    <result column="zhuohao" jdbcType="VARCHAR" property="zhuohao" />
+    <result column="statecn" jdbcType="VARCHAR" property="statecn" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, openid, username, renshu, xingming, shouji, shijian, todate, beizhu, shopid, 
+    shopname, ndate, type, sid, shop, zhuohao, statecn
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from wct_dingzuo
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from wct_dingzuo
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.ideabobo.model.Dingzuo">
+    insert into wct_dingzuo (id, openid, username, 
+      renshu, xingming, shouji, 
+      shijian, todate, beizhu, 
+      shopid, shopname, ndate, 
+      type, sid, shop, zhuohao, 
+      statecn)
+    values (#{id,jdbcType=INTEGER}, #{openid,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, 
+      #{renshu,jdbcType=VARCHAR}, #{xingming,jdbcType=VARCHAR}, #{shouji,jdbcType=VARCHAR}, 
+      #{shijian,jdbcType=VARCHAR}, #{todate,jdbcType=VARCHAR}, #{beizhu,jdbcType=VARCHAR}, 
+      #{shopid,jdbcType=VARCHAR}, #{shopname,jdbcType=VARCHAR}, #{ndate,jdbcType=VARCHAR}, 
+      #{type,jdbcType=INTEGER}, #{sid,jdbcType=INTEGER}, #{shop,jdbcType=VARCHAR}, #{zhuohao,jdbcType=VARCHAR}, 
+      #{statecn,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.ideabobo.model.Dingzuo">
+    insert into wct_dingzuo
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="openid != null">
+        openid,
+      </if>
+      <if test="username != null">
+        username,
+      </if>
+      <if test="renshu != null">
+        renshu,
+      </if>
+      <if test="xingming != null">
+        xingming,
+      </if>
+      <if test="shouji != null">
+        shouji,
+      </if>
+      <if test="shijian != null">
+        shijian,
+      </if>
+      <if test="todate != null">
+        todate,
+      </if>
+      <if test="beizhu != null">
+        beizhu,
+      </if>
+      <if test="shopid != null">
+        shopid,
+      </if>
+      <if test="shopname != null">
+        shopname,
+      </if>
+      <if test="ndate != null">
+        ndate,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="sid != null">
+        sid,
+      </if>
+      <if test="shop != null">
+        shop,
+      </if>
+      <if test="zhuohao != null">
+        zhuohao,
+      </if>
+      <if test="statecn != null">
+        statecn,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="openid != null">
+        #{openid,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null">
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="renshu != null">
+        #{renshu,jdbcType=VARCHAR},
+      </if>
+      <if test="xingming != null">
+        #{xingming,jdbcType=VARCHAR},
+      </if>
+      <if test="shouji != null">
+        #{shouji,jdbcType=VARCHAR},
+      </if>
+      <if test="shijian != null">
+        #{shijian,jdbcType=VARCHAR},
+      </if>
+      <if test="todate != null">
+        #{todate,jdbcType=VARCHAR},
+      </if>
+      <if test="beizhu != null">
+        #{beizhu,jdbcType=VARCHAR},
+      </if>
+      <if test="shopid != null">
+        #{shopid,jdbcType=VARCHAR},
+      </if>
+      <if test="shopname != null">
+        #{shopname,jdbcType=VARCHAR},
+      </if>
+      <if test="ndate != null">
+        #{ndate,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="sid != null">
+        #{sid,jdbcType=INTEGER},
+      </if>
+      <if test="shop != null">
+        #{shop,jdbcType=VARCHAR},
+      </if>
+      <if test="zhuohao != null">
+        #{zhuohao,jdbcType=VARCHAR},
+      </if>
+      <if test="statecn != null">
+        #{statecn,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.ideabobo.model.Dingzuo">
+    update wct_dingzuo
+    <set>
+      <if test="openid != null">
+        openid = #{openid,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null">
+        username = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="renshu != null">
+        renshu = #{renshu,jdbcType=VARCHAR},
+      </if>
+      <if test="xingming != null">
+        xingming = #{xingming,jdbcType=VARCHAR},
+      </if>
+      <if test="shouji != null">
+        shouji = #{shouji,jdbcType=VARCHAR},
+      </if>
+      <if test="shijian != null">
+        shijian = #{shijian,jdbcType=VARCHAR},
+      </if>
+      <if test="todate != null">
+        todate = #{todate,jdbcType=VARCHAR},
+      </if>
+      <if test="beizhu != null">
+        beizhu = #{beizhu,jdbcType=VARCHAR},
+      </if>
+      <if test="shopid != null">
+        shopid = #{shopid,jdbcType=VARCHAR},
+      </if>
+      <if test="shopname != null">
+        shopname = #{shopname,jdbcType=VARCHAR},
+      </if>
+      <if test="ndate != null">
+        ndate = #{ndate,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="sid != null">
+        sid = #{sid,jdbcType=INTEGER},
+      </if>
+      <if test="shop != null">
+        shop = #{shop,jdbcType=VARCHAR},
+      </if>
+      <if test="zhuohao != null">
+        zhuohao = #{zhuohao,jdbcType=VARCHAR},
+      </if>
+      <if test="statecn != null">
+        statecn = #{statecn,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.ideabobo.model.Dingzuo">
+    update wct_dingzuo
+    set openid = #{openid,jdbcType=VARCHAR},
+      username = #{username,jdbcType=VARCHAR},
+      renshu = #{renshu,jdbcType=VARCHAR},
+      xingming = #{xingming,jdbcType=VARCHAR},
+      shouji = #{shouji,jdbcType=VARCHAR},
+      shijian = #{shijian,jdbcType=VARCHAR},
+      todate = #{todate,jdbcType=VARCHAR},
+      beizhu = #{beizhu,jdbcType=VARCHAR},
+      shopid = #{shopid,jdbcType=VARCHAR},
+      shopname = #{shopname,jdbcType=VARCHAR},
+      ndate = #{ndate,jdbcType=VARCHAR},
+      type = #{type,jdbcType=INTEGER},
+      sid = #{sid,jdbcType=INTEGER},
+      shop = #{shop,jdbcType=VARCHAR},
+      zhuohao = #{zhuohao,jdbcType=VARCHAR},
+      statecn = #{statecn,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

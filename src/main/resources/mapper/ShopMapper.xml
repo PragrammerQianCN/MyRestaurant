@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ideabobo.service.ShopMapper">
+  <resultMap id="BaseResultMap" type="com.ideabobo.model.Shop">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="sname" jdbcType="VARCHAR" property="sname" />
+    <result column="img" jdbcType="VARCHAR" property="img" />
+    <result column="note" jdbcType="VARCHAR" property="note" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="longitude" jdbcType="VARCHAR" property="longitude" />
+    <result column="latitude" jdbcType="VARCHAR" property="latitude" />
+    <result column="tel" jdbcType="VARCHAR" property="tel" />
+    <result column="ownid" jdbcType="VARCHAR" property="ownid" />
+    <result column="passwd" jdbcType="VARCHAR" property="passwd" />
+    <result column="cid" jdbcType="VARCHAR" property="cid" />
+    <result column="city" jdbcType="VARCHAR" property="city" />
+    <result column="statecn" jdbcType="VARCHAR" property="statecn" />
+    <result column="danshu" jdbcType="INTEGER" property="danshu" />
+    <result column="songcan" jdbcType="INTEGER" property="songcan" />
+    <result column="haoping" jdbcType="INTEGER" property="haoping" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, sname, img, note, address, longitude, latitude, tel, ownid, passwd, cid, city, 
+    statecn, danshu, songcan, haoping
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from wct_shop
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from wct_shop
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.ideabobo.model.Shop">
+    insert into wct_shop (id, sname, img, 
+      note, address, longitude, 
+      latitude, tel, ownid, 
+      passwd, cid, city, 
+      statecn, danshu, songcan, 
+      haoping)
+    values (#{id,jdbcType=INTEGER}, #{sname,jdbcType=VARCHAR}, #{img,jdbcType=VARCHAR}, 
+      #{note,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{longitude,jdbcType=VARCHAR}, 
+      #{latitude,jdbcType=VARCHAR}, #{tel,jdbcType=VARCHAR}, #{ownid,jdbcType=VARCHAR}, 
+      #{passwd,jdbcType=VARCHAR}, #{cid,jdbcType=VARCHAR}, #{city,jdbcType=VARCHAR}, 
+      #{statecn,jdbcType=VARCHAR}, #{danshu,jdbcType=INTEGER}, #{songcan,jdbcType=INTEGER}, 
+      #{haoping,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.ideabobo.model.Shop">
+    insert into wct_shop
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="sname != null">
+        sname,
+      </if>
+      <if test="img != null">
+        img,
+      </if>
+      <if test="note != null">
+        note,
+      </if>
+      <if test="address != null">
+        address,
+      </if>
+      <if test="longitude != null">
+        longitude,
+      </if>
+      <if test="latitude != null">
+        latitude,
+      </if>
+      <if test="tel != null">
+        tel,
+      </if>
+      <if test="ownid != null">
+        ownid,
+      </if>
+      <if test="passwd != null">
+        passwd,
+      </if>
+      <if test="cid != null">
+        cid,
+      </if>
+      <if test="city != null">
+        city,
+      </if>
+      <if test="statecn != null">
+        statecn,
+      </if>
+      <if test="danshu != null">
+        danshu,
+      </if>
+      <if test="songcan != null">
+        songcan,
+      </if>
+      <if test="haoping != null">
+        haoping,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="sname != null">
+        #{sname,jdbcType=VARCHAR},
+      </if>
+      <if test="img != null">
+        #{img,jdbcType=VARCHAR},
+      </if>
+      <if test="note != null">
+        #{note,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null">
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="longitude != null">
+        #{longitude,jdbcType=VARCHAR},
+      </if>
+      <if test="latitude != null">
+        #{latitude,jdbcType=VARCHAR},
+      </if>
+      <if test="tel != null">
+        #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="ownid != null">
+        #{ownid,jdbcType=VARCHAR},
+      </if>
+      <if test="passwd != null">
+        #{passwd,jdbcType=VARCHAR},
+      </if>
+      <if test="cid != null">
+        #{cid,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null">
+        #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="statecn != null">
+        #{statecn,jdbcType=VARCHAR},
+      </if>
+      <if test="danshu != null">
+        #{danshu,jdbcType=INTEGER},
+      </if>
+      <if test="songcan != null">
+        #{songcan,jdbcType=INTEGER},
+      </if>
+      <if test="haoping != null">
+        #{haoping,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.ideabobo.model.Shop">
+    update wct_shop
+    <set>
+      <if test="sname != null">
+        sname = #{sname,jdbcType=VARCHAR},
+      </if>
+      <if test="img != null">
+        img = #{img,jdbcType=VARCHAR},
+      </if>
+      <if test="note != null">
+        note = #{note,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null">
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="longitude != null">
+        longitude = #{longitude,jdbcType=VARCHAR},
+      </if>
+      <if test="latitude != null">
+        latitude = #{latitude,jdbcType=VARCHAR},
+      </if>
+      <if test="tel != null">
+        tel = #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="ownid != null">
+        ownid = #{ownid,jdbcType=VARCHAR},
+      </if>
+      <if test="passwd != null">
+        passwd = #{passwd,jdbcType=VARCHAR},
+      </if>
+      <if test="cid != null">
+        cid = #{cid,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null">
+        city = #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="statecn != null">
+        statecn = #{statecn,jdbcType=VARCHAR},
+      </if>
+      <if test="danshu != null">
+        danshu = #{danshu,jdbcType=INTEGER},
+      </if>
+      <if test="songcan != null">
+        songcan = #{songcan,jdbcType=INTEGER},
+      </if>
+      <if test="haoping != null">
+        haoping = #{haoping,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.ideabobo.model.Shop">
+    update wct_shop
+    set sname = #{sname,jdbcType=VARCHAR},
+      img = #{img,jdbcType=VARCHAR},
+      note = #{note,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      longitude = #{longitude,jdbcType=VARCHAR},
+      latitude = #{latitude,jdbcType=VARCHAR},
+      tel = #{tel,jdbcType=VARCHAR},
+      ownid = #{ownid,jdbcType=VARCHAR},
+      passwd = #{passwd,jdbcType=VARCHAR},
+      cid = #{cid,jdbcType=VARCHAR},
+      city = #{city,jdbcType=VARCHAR},
+      statecn = #{statecn,jdbcType=VARCHAR},
+      danshu = #{danshu,jdbcType=INTEGER},
+      songcan = #{songcan,jdbcType=INTEGER},
+      haoping = #{haoping,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

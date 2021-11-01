@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="./__PUBLIC__/layuimini/lib/layui-v2.5.5/css/layui.css" media="all">
+    <link rel="stylesheet" href="./__PUBLIC__/layuimini/css/public.css" media="all">
+    <script src="./__PUBLIC__/layuimini/lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="./__PUBLIC__/js/jquery-3.4.1.min.js"></script>
+    <script type="text/javascript" src="./__PUBLIC__/js/common.js"></script>
+    <script type="text/javascript" src="./__PUBLIC__/js/echarts.js"></script>
+</head>
+<body>
+
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <fieldset class="table-search-fieldset">
+            <legend>搜索信息</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane" lay-filter="searchfrom" action="">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">日期</label>
+                            <div class="layui-input-inline">
+                                <input type="date" name="ndate" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn layui-btn-primary" lay-submit
+                                    lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+
+        <script type="text/html" id="grid1toolbar">
+            <div class="layui-btn-container">
+                <!--<button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 添加</button>-->
+                <!--<button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"> 删除</button>-->
+            </div>
+        </script>
+        <div id="tubiaoctn" style="display: block;" class="layui-form layuimini-form">
+            <div id="mychat" style="width: 800px;height:400px;"></div>
+        </div>
+        <p style="color: red;font-size: 20px;" id="btotal"></p>
+        <table class="layui-hide" id="grid1Id" lay-filter="grid1"></table>
+
+    </div>
+
+
+
+
+
+
+</div>
+
+<script>
+
+
+    layui.use(['form', 'table'], function () {
+        var form = layui.form,
+            table = layui.table;
+
+
+        var managedialogindex;
+        var managedialogindex2;
+        var grid2dialogindex;
+        var grid1;
+        var grid2;
+        var focusobj;
+        grid1 = table.render({
+            elem: '#grid1Id',
+            url: __APP__+"database/listPage?table=bill",
+            toolbar: '#grid1toolbar',
+            defaultToolbar: ['filter', 'exports', 'print', {
+                title: '提示',
+                layEvent: 'LAYTABLE_TIPS',
+                icon: 'layui-icon-tips'
+            }],
+            cols: [[
+                //{type: "checkbox", width: 50},
+                {field: 'id', minwidth: 20, title: '编号'},
+                {field: 'gnames', minwidth: 100, title: '名称'},
+                {field: 'user', minwidth: 100, title: '用户'},
+                {field: 'ndate', minwidth: 100, title: '时间'},
+                {field: 'total', minwidth: 100, title: '总价'},
+                {field: 'address', minwidth: 100, title: '地址'},
+                {field: 'tel', minwidth: 100, title: '电话'},
+                {field: 'note', minwidth: 100, title: '备注'},
+                {field: 'statecn', minwidth: 50, title: '状态'},
+                {title: '操作', width: 300, toolbar: '#grid1Bar', align: "center"}
+            ]],
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 15,
+            page: true,
+            skin: 'line',
+            response: {
+                statusName: 'code' //规定数据状态的字段名称，默认：code
+                //,statusCode: 200 //规定成功的状态码，默认：0
+                //,msgName: 'hint' //规定状态信息的字段名称，默认：msg
+                ,countName: 'total' //规定数据总数的字段名称，默认：count
+                ,dataName: 'rows' //规定数据列表的字段名称，默认：data
+            },
+            request: {
+                pageName: 'page', //页码的参数名称，默认：page
+                limitName: 'rows' //每页数据量的参数名，默认：limit
+            },
+            done:function (r,rows,data){
+                var list = r.data;
+                var total = 0;
+                for(var i=0;i<list.length;i++){
+                    var g = list[i];
+                    total+=g.total*1;
+                }
+                $("#btotal").text("总金额:"+total+"元");
+                var txarray = null;
+                var xarray = [];
+                var yarray = [];
+                ajaxCallback1("list",{table:"good"},function (data) {
+                    txarray = data;
+                    for(var j=0;j<txarray.length;j++){
+                        var gname = txarray[j].gname;
+                        var count = 0;
+                        for(var i=0;i<list.length;i++){
+                            var obj = list[i];
+                            if(obj.gnames.indexOf(gname)!=-1){
+                                count++;
+                            }
+                        }
+                        txarray[j].xiaoliang = count;
+                        if(count>0){
+                            xarray.push(gname);
+                            yarray.push(count);
+                        }
+                    }
+                   /*layer.open({
+                        title: '图表',
+                        type: 1,
+                        shade: 0.2,
+                        maxmin: true,
+                        shadeClose: true,
+                        area: ['90%', '90%'],
+                        content: $('#tubiaoctn')
+                    });*/
+
+
+                    refreshChart(xarray,yarray);
+
+                });
+            }
+        });
+
+
+
+
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            var searchobj =data.field;
+            /*layer.alert(result, {
+                title: '最终的搜索信息'
+            });*/
+
+            //执行搜索重载
+            table.reload('grid1Id', {
+                page: {
+                    curr: 1
+                }
+                , where: searchobj
+            }, 'data');
+
+            return false;
+        });
+
+
+        // 监听搜索操作
+        form.on('submit(data-search-btn2)', function (data) {
+            var searchobj =data.field;
+            /*layer.alert(result, {
+                title: '最终的搜索信息'
+            });*/
+
+            //执行搜索重载
+            table.reload('grid2Id', {
+                page: {
+                    curr: 1
+                }
+                , where: searchobj
+            }, 'data');
+
+            return false;
+        });
+
+        function changeStatecn(id,statecn,bid) {
+            ajaxCallback1("save",{table:"bill",statecn:statecn,id:id},function () {
+                ajaxCallback1("find",{table:"book",id:bid},function (book) {
+                    var total = book.total*1+1;
+                    ajaxCallback1("save",{id:bid,total:total,table:"book"},function (data) {
+                           layer.alert("操作成功");
+                    })
+                })
+            });
+            grid1.reload();
+        }
+
+        /**
+         * toolbar监听事件
+         */
+        table.on('toolbar(grid1)', function (obj) {
+            var focusobj = obj.data;
+            if (obj.event === 'add') {  // 监听添加操作
+                $("#managerform")[0].reset();
+                managedialogindex = layer.open({
+                    title: '添加',
+                    type: 1,
+                    shade: 0.2,
+                    maxmin: true,
+                    shadeClose: true,
+                    area: ['90%', '90%'],
+                    content: $('#managerform')
+                });
+                $(window).on("resize", function () {
+                    layer.full(managedialogindex);
+                });
+            } else if (obj.event === 'delete') {  // 监听删除操作
+                var checkStatus = table.checkStatus('grid1Id')
+                    , data = checkStatus.data;
+                layer.alert(JSON.stringify(data));
+            }
+        });
+
+        form.on('submit(saveBtn)', function (formobj) {
+            /*var index = layer.alert(JSON.stringify(data.field), {
+                title: '最终的提交信息'
+            }, function () {
+                layer.close(index);
+            });*/
+            var fdata = formobj.field;
+            fdata.table="bill";
+            ajaxFormUploadFile(function (ir){
+                fdata.img = ir;
+                ajaxCallback1("save",fdata,function (sr) {
+                    layer.close(managedialogindex);
+                    grid1.reload();
+                });
+            });
+
+            return false;
+        });
+
+
+
+        //监听表格复选框选择
+        table.on('checkbox(grid1)', function (obj) {
+            console.log(obj)
+        });
+
+        table.on('tool(grid1)', function (obj) {
+            var data = obj.data;
+            var uuid = data.id;
+            focusobj = data;
+            if (obj.event === 'delete') {
+                layer.confirm('真的删除行么', function (index) {
+
+                    $.post(__APP__+"database/delete", {table:"bill",id: uuid}, function (data) {
+                        obj.del();
+                        layer.close(index);
+                    });
+
+                });
+            } else if (obj.event === 'option1') {  // 监听删除操作
+                changeStatecn(focusobj.id,"已出票",focusobj.bid);
+            }else if (obj.event === 'option2') {  // 监听删除操作
+                changeStatecn(focusobj.id,"已完成",focusobj.bid);
+            }else if (obj.event === 'option3') {  // 监听删除操作
+                changeStatecn(focusobj.id,"已退货",focusobj.bid);
+            }
+        });
+
+
+
+    });
+
+
+
+    function refreshChart(xarray,yarray){
+
+                var myChart = echarts.init(document.getElementById('mychat'));
+                var option = {
+                    color: ['#3398DB'],
+                    tooltip : {
+                        trigger: 'axis',
+                        //formatter: "{a} <br/>{b}: {c} ({d}%)",
+                        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                        }
+                    },
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '3%',
+                        containLabel: true
+                    },
+                    xAxis : [
+                        {
+                            type : 'category',
+                            data : xarray,
+                            axisTick: {
+                                alignWithLabel: true
+                            }
+                        }
+                    ],
+                    yAxis : [
+                        {
+                            type : 'value'
+                        }
+                    ],
+                    series : [
+                        {
+                            name:'订单量',
+                            type:'bar',
+                            barWidth: '60%',
+                            data:yarray
+                        }
+                    ]
+                };
+                myChart.setOption(option);
+    }
+
+</script>
+
+</body>
+</html>
